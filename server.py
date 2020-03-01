@@ -56,25 +56,28 @@ class Server(BaseHTTPRequestHandler):
         return bytes(self.get_from_db(self.headers['from_ts'], self.headers['to_ts']), 'UTF-8')
 
     def get_from_db(self, from_timestamp, to_timestamp):
-        if from_timestamp is not None and to_timestamp is not None:
-            res = self.collection.find(
-                {
-                    '$and': [
-                        {'timestamp': {'$gt': int(from_timestamp)}},
-                        {'timestamp': {'$lt': int(to_timestamp)}}
-                    ]
-                }
-            )
-        elif from_timestamp is None and to_timestamp is not None:
-            res = self.collection.find(
-                {'timestamp': {'$lt': int(to_timestamp)}}
-            )
-        elif from_timestamp is not None and to_timestamp is None:
-            res = self.collection.find(
-                {'timestamp': {'$gt': int(from_timestamp)}}
-            )
+        if self.path == '/last':
+            res = self.collection.find().sort([('timestamp', pymongo.DESCENDING)]).limit(1)
         else:
-            res = self.collection.find()
+            if from_timestamp is not None and to_timestamp is not None:
+                res = self.collection.find(
+                    {
+                        '$and': [
+                            {'timestamp': {'$gt': int(from_timestamp)}},
+                            {'timestamp': {'$lt': int(to_timestamp)}}
+                        ]
+                    }
+                )
+            elif from_timestamp is None and to_timestamp is not None:
+                res = self.collection.find(
+                    {'timestamp': {'$lt': int(to_timestamp)}}
+                )
+            elif from_timestamp is not None and to_timestamp is None:
+                res = self.collection.find(
+                    {'timestamp': {'$gt': int(from_timestamp)}}
+                )
+            else:
+                res = self.collection.find()
         ans = []
         for entry in res:
             js = {

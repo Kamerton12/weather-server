@@ -27,7 +27,7 @@
 
   function load() {
     let xhr = new XMLHttpRequest();
-    xhr.open('POST', 'https://local-weather-minsk.herokuapp.com/', true);
+    xhr.open('POST', 'https://local-weather-minsk.herokuapp.com/last', true);
     xhr.send();
     xhr.onload = function() {
       let json = JSON.parse(xhr.responseText);
