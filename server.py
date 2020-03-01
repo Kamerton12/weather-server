@@ -28,6 +28,7 @@ class Server(BaseHTTPRequestHandler):
         else:
             self.send_response(403)
             self.send_header('Content-Type', "text/html")
+            self.send_header("Access-Control-Allow-Origin", '*')
             self.end_headers()
             if not self.if_allowed_dir(path):
                 self.wfile.write(bytes("forbidden", 'UTF-8'))
@@ -41,6 +42,7 @@ class Server(BaseHTTPRequestHandler):
     def send_file(self, name):
         self.send_response(200)
         self.send_header('Content-Type', "text/html")
+        self.send_header("Access-Control-Allow-Origin", '*')
         self.end_headers()
         with open(name, 'rb') as file:
             self.wfile.write(file.read())
@@ -52,6 +54,7 @@ class Server(BaseHTTPRequestHandler):
     def handle_http(self, status, content_type):
         self.send_response(status)
         self.send_header('Content-Type', content_type)
+        self.send_header("Access-Control-Allow-Origin", '*')
         self.end_headers()
         return bytes(self.get_from_db(self.headers['from_ts'], self.headers['to_ts']), 'UTF-8')
 
