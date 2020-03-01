@@ -35,10 +35,10 @@
     xhr.send();
     xhr.onload = function() {
       let json = JSON.parse(xhr.responseText);
-      t.innerText = json[0].temperature;
-      h.innerText = json[0].humidity;
-      p.innerText = json[0].pressure;
-      a.innerText = json[0].altitude;
+      t.innerText = json[json.length-1].temperature;
+      h.innerText = json[json.length-1].humidity;
+      p.innerText = json[json.length-1].pressure;
+      a.innerText = json[json.length-1].altitude;
     }
   }
 </script>
