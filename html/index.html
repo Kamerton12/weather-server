@@ -24,16 +24,21 @@
 	let p = document.getElementById('p')
   let a = document.getElementById('a')
   var xhr = new XMLHttpRequest();
+  load()
 
   setInterval(function() {
-    xhr.open('POST', 'https://local-weather-minsk.herokuapp.com/', false);
-    xhr.send();
-    let json = JSON.parse(xhr.responseText);
-    t.innerText = json[0].t;
-    h.innerText = json[0].h;
-    p.innerText = json[0].p;
-    a.innerText = json[0].a;
-
+    load()
   }, 5000)
 
+  function load() {
+    xhr.open('POST', 'https://local-weather-minsk.herokuapp.com/', false);
+    xhr.send();
+    xhr.onload = function() {
+      let json = JSON.parse(xhr.responseText);
+      t.innerText = json[0].temperature;
+      h.innerText = json[0].humidity;
+      p.innerText = json[0].pressure;
+      a.innerText = json[0].altitude;
+    }
+  }
 </script>
