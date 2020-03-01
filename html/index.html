@@ -1,0 +1,39 @@
+<div id='container'></div>
+
+<head><meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>ESP8266 Weather Station</title>
+    <style>html { font-family: Helvetica; display: inline-block; margin: 0px auto; text-align: center;}
+    body{margin-top: 50px;} h1 {color: #444444;margin: 50px auto 30px;}
+    p {font-size: 24px;color: #444444;margin-bottom: 10px;}
+    </style>
+    </head>
+    <body>
+    <div id="webpage">
+    <h1>ESP8266 Weather Station</h1>
+    <p>Temperature: <span id='t'></span> C&deg;</p>
+    <p>Humidity: <span id='h'></span> %</p>
+    <p>Pressure: <span id='p'></span> hPa</p>
+    <p>Altitude: <span id='a'></span> m</p>
+    </div>
+    </body>
+    </html>
+
+<script type="text/javascript">
+  let t = document.getElementById('t')
+	let h = document.getElementById('h')
+	let p = document.getElementById('p')
+  let a = document.getElementById('a')
+  var xhr = new XMLHttpRequest();
+
+  setInterval(function() {
+    xhr.open('POST', 'https://local-weather-minsk.herokuapp.com/', false);
+    xhr.send();
+    let json = JSON.parse(xhr.responseText);
+    t.innerText = json[0].t;
+    h.innerText = json[0].h;
+    p.innerText = json[0].p;
+    a.innerText = json[0].a;
+
+  }, 5000)
+
+</script>

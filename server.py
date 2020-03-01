@@ -19,7 +19,31 @@ class Server(BaseHTTPRequestHandler):
         return
 
     def do_GET(self):
-        return
+        print(self.path)
+        path = os.path.abspath('html{}'.format(self.path))
+        if self.path == '/':
+            self.send_file('html/index.html')
+        elif os.path.isfile(path) and self.if_allowed_dir(path):
+            self.send_file(path)
+        else:
+            self.send_response(403)
+            self.send_header('Content-Type', "text/html")
+            self.end_headers()
+            if not self.if_allowed_dir(path):
+                self.wfile.write(bytes("forbidden", 'UTF-8'))
+            else:
+                self.wfile.write(bytes("don't exists", 'UTF-8'))
+
+    @staticmethod
+    def if_allowed_dir(directory):
+        return directory.startswith(os.path.abspath('html'))
+
+    def send_file(self, name):
+        self.send_response(200)
+        self.send_header('Content-Type', "text/html")
+        self.end_headers()
+        with open(name, 'rb') as file:
+            self.wfile.write(file.read())
 
     def respond(self):
         context = self.handle_http(200, 'application/json')
