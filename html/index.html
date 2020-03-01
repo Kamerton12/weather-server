@@ -1,43 +1,150 @@
-<div id='container'></div>
-
-<head><meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<html>
+  <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <title>ESP8266 Weather Station</title>
-    <style>html { font-family: Helvetica; display: inline-block; margin: 0px auto; text-align: center;}
-    body{margin-top: 50px;} h1 {color: #444444;margin: 50px auto 30px;}
-    p {font-size: 24px;color: #444444;margin-bottom: 10px;}
-    </style>
-    </head>
-    <body>
-    <div id="webpage">
-    <h1>ESP8266 Weather Station</h1>
-    <p>Temperature: <span id='t'></span> C&deg;</p>
-    <p>Humidity: <span id='h'></span> %</p>
-    <p>Pressure: <span id='p'></span> hPa</p>
-    <p>Altitude: <span id='a'></span> m</p>
+    <!-- <script src="https://cdn.jsdelivr.net/npm/chart.js@2.8.0"></script> -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.8.0/Chart.bundle.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.13.0/moment.min.js"></script>
+    <script>
+      var type = 0
+      var resp;
+    </script>
+  </head>
+  <body>
+    <button onclick="update()">To next</button>
+    <canvas id="chart"></canvas>
+    <script>
+      // console.log(moment().add(2, 'd'))
+      let ctx = document.getElementById('chart').getContext('2d')
+      load()
+    
+    //   var chart = new Chart(ctx, {
+    //     // The type of chart we want to create
+    //     type: 'line',
+
+    //     // The data for our dataset
+    //     data: [{
+    //         t: new Date(),
+    //         y: 1
+    //     }, {
+    //         t: new Date(),
+    //         y: 10
+    //     }]
+    // });
+      function load() {
+        let xhr = new XMLHttpRequest();
+        xhr.open('POST', 'https://local-weather-minsk.herokuapp.com', true);
+        xhr.send();
+        xhr.onload = function() {
+          resp = xhr.responseText
+          update()
+        }
+      }
+
+      function update() {
+
+        let json = JSON.parse(resp);
+          let timestamps = []
+          let temps = []
+          let humidity = []
+          let pressure = []
+          for(data of json) {
+            temps.push(data.temperature)
+            humidity.push(data.humidity)
+            pressure.push(data.pressure)
+            timestamps.push(moment(data.timestamp))
+            // h.innerText = date.humidity;
+            // p.innerText = date.pressure;
+            // a.innerText = date.altitude;
+          }
+          var dataset;
+          var label;
+          switch(type) {
+            case 0:
+              dataset = temps
+              label = "Temerature"
+              break;
+            case 1:
+              dataset = humidity
+              label = "Humidity"
+              break;
+            case 2:
+              dataset = pressure
+              label = "Pressure"
+              break;
+          }
+          var chart = new Chart(ctx, {
+              type: 'line',
+              data: {
+                labels: timestamps,
+                datasets: [{
+                  label: label,
+                  data: dataset
+                }]
+              }
+              ,
+              options: {
+                scales: {
+                  xAxes: [{
+                    type: 'time',
+                    time: {
+                      displayFormats: {
+                        'millisecond': 'MMM DD',
+                        'second': 'MMM DD',
+                        'minute': 'MMM DD hh:mm',
+                        'hour': 'MMM DD',
+                        'day': 'MMM DD',
+                        'week': 'MMM DD',
+                        'month': 'MMM DD',
+                        'quarter': 'MMM DD',
+                        'year': 'MMM DD',
+                      }
+                    }
+                  }],
+                  yAxes: [{
+                    ticks: {
+                      suggestedMax: 30
+                    }
+                  }]
+                }
+              }
+          });
+          type++;
+          if(type >= 3){
+            type = 0
+          }
+      }
+    </script>
+    <!-- <div id="webpage">
+      <h1>ESP8266 Weather Station</h1>
+      <p>Temperature: <span id='t'></span> C&deg;</p>
+      <p>Humidity: <span id='h'></span> %</p>
+      <p>Pressure: <span id='p'></span> hPa</p>
+      <p>Altitude: <span id='a'></span> m</p>
     </div>
-    </body>
-    </html>
 
-<script type="text/javascript">
-  let t = document.getElementById('t')
-	let h = document.getElementById('h')
-	let p = document.getElementById('p')
-  let a = document.getElementById('a')
-  load()
+    <script type="text/javascript">
+      let t = document.getElementById('t')
+      let h = document.getElementById('h')
+      let p = document.getElementById('p')
+      let a = document.getElementById('a')
+      load()
 
-  function load() {
-    let xhr = new XMLHttpRequest();
-    xhr.open('POST', 'https://local-weather-minsk.herokuapp.com/last', true);
-    xhr.send();
-    xhr.onload = function() {
-      let json = JSON.parse(xhr.responseText);
-      t.innerText = json[json.length-1].temperature;
-      h.innerText = json[json.length-1].humidity;
-      p.innerText = json[json.length-1].pressure;
-      a.innerText = json[json.length-1].altitude;
-      setTimeout(function() {
-        load()
-      }, 5000)
-    }
-  }
-</script>
+      function load() {
+        let xhr = new XMLHttpRequest();
+        xhr.open('POST', 'https://local-weather-minsk.herokuapp.com/last', true);
+        xhr.send();
+        xhr.onload = function() {
+          let json = JSON.parse(xhr.responseText);
+          t.innerText = json[json.length-1].temperature;
+          h.innerText = json[json.length-1].humidity;
+          p.innerText = json[json.length-1].pressure;
+          a.innerText = json[json.length-1].altitude;
+          setTimeout(function() {
+            load()
+          }, 5000)
+        }
+      }
+    </script> -->
+  </body>
+</html>
