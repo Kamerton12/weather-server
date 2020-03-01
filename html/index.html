@@ -26,10 +26,6 @@
   var xhr = new XMLHttpRequest();
   load()
 
-  setInterval(function() {
-    load()
-  }, 5000)
-
   function load() {
     xhr.open('POST', 'https://local-weather-minsk.herokuapp.com/', false);
     xhr.send();
@@ -39,6 +35,9 @@
       h.innerText = json[json.length-1].humidity;
       p.innerText = json[json.length-1].pressure;
       a.innerText = json[json.length-1].altitude;
+      setTimeout(function() {
+        load()
+      }, 5000)
     }
   }
 </script>
