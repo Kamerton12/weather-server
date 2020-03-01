@@ -5,7 +5,7 @@ import os
 
 
 class Server(BaseHTTPRequestHandler):
-    password = os.getenv("mongoPswd", "794613718293")
+    password = os.environ.get("mongoPswd", "794613718293")
     client = pymongo.MongoClient(
         'mongodb+srv://admin:{}@weatherdata-etum5.mongodb.net/test?retryWrites=true&w=majority'.format(password))
     db = client['weather']

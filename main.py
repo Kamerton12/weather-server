@@ -2,8 +2,10 @@ from http.server import HTTPServer
 from server import Server
 import os
 
-port = int(os.getenv("PORT", 1050))
-httpd = HTTPServer(("localhost", port), Server)
+port = int(os.environ.get('PORT', 17995))  # as per OP comments default is 17995
+
+httpd = HTTPServer(('', port), Server)
+
 try:
     httpd.serve_forever()
 except:
