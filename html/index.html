@@ -23,10 +23,10 @@
 	let h = document.getElementById('h')
 	let p = document.getElementById('p')
   let a = document.getElementById('a')
-  var xhr = new XMLHttpRequest();
   load()
 
   function load() {
+    let xhr = new XMLHttpRequest();
     xhr.open('POST', 'https://local-weather-minsk.herokuapp.com/', false);
     xhr.send();
     xhr.onload = function() {
